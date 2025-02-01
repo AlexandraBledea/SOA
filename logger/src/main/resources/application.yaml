@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: logger
+
+server:
+  port: ${APPLICATION_PORT:8020}
+  servlet:
+    context-path: "/logger"
+
+logging:
+  file:
+    path: /var/log/logger

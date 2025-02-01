@@ -56,6 +56,24 @@ services:
     volumes:
       - ./logs/email/:/var/log/email
 
+  logger:
+    image: logger:latest
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./logger
+    environment:
+      - APPLICATION_PORT=8020
+    deploy:
+      replicas: 1
+    ports:
+      - "8020:8020"
+    depends_on:
+      kafka:
+        condition: service_started
+    volumes:
+      - ./logs/logger/:/var/log/logger
+
   task:
     image: task:latest
     restart: always
@@ -77,6 +95,8 @@ services:
       postgres-db:
         condition: service_healthy
       kafka:
+        condition: service_started
+      rabbitmq:
         condition: service_started
     volumes:
       - ./logs/task/:/var/log/task
@@ -101,8 +121,6 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-      kafka:
-        condition: service_started
       rabbitmq:
         condition: service_started
     volumes:

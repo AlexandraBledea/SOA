@@ -5,7 +5,7 @@ FROM amazoncorretto:17-alpine3.19
 WORKDIR /app
 
 # Copy the application JAR file into the container
-COPY target/email-*.jar email.jar
+COPY target/logger-*.jar logger.jar
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "/app/email.jar"]
+ENTRYPOINT ["java", "-jar", "/app/logger.jar"]
