@@ -1,3 +1,30 @@
 spring:
   application:
     name: authentication
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?currentSchema=${POSTGRES_SCHEMA:public}&search_path==${POSTGRES_SCHEMA:public}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: ${APPLICATION_PORT:8080}
+  servlet:
+    context-path: "/authentication"
+
+logging:
+  file:
+    path: /var/log/authentication
+
+jwt:
+  public:
+    key: file:/app/keys/public_key.pem
+  private:
+    key: file:/app/keys/private_key.pem
+  expiration: 86400000

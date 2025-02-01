@@ -1,2 +1,17 @@
-/mvnw text eol=lf
-*.cmd text eol=crlf
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+# Copy the latest JAR without specifying version
+COPY target/authentication-0.0.1-SNAPSHOT.jar /authentication.jar
+
+# Copy the RSA keys into the container
+COPY keys /app/keys/
+
+# Ensure the keys are accessible
+RUN chmod 600 /app/keys/*
+
+EXPOSE 8081
+
+# Run the JAR
+ENTRYPOINT ["java", "-jar", "/authentication.jar"]

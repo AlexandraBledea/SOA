@@ -1,3 +1,12 @@
 spring:
   application:
     name: email
+
+server:
+  port: ${APPLICATION_PORT:8070}
+  servlet:
+    context-path: "/email"
+
+logging:
+  file:
+    path: /var/log/email

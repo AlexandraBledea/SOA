@@ -1,0 +1,147 @@
+services:
+  postgres-db:
+    image: postgres:17.2-alpine3.21
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - ./postgres-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  authentication:
+    image: authentication:latest
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./authentication
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+      - APPLICATION_PORT=8080
+    deploy:
+      replicas: 1
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    volumes:
+      - ./logs/authentication/:/var/log/authentication
+
+  email:
+    image: email:latest
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./email
+    environment:
+      - APPLICATION_PORT=8070
+    deploy:
+      replicas: 1
+    ports:
+      - "8070:8070"
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    volumes:
+      - ./logs/email/:/var/log/email
+
+  task:
+    image: task:latest
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./task
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+      - APPLICATION_PORT=8060
+    deploy:
+      replicas: 1
+    ports:
+      - "8060:8060"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    volumes:
+      - ./logs/task/:/var/log/task
+
+  notification:
+    image: notification:latest
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./notification
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+      - APPLICATION_PORT=8050
+    deploy:
+      replicas: 1
+    ports:
+      - "8050:8050"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    volumes:
+      - ./logs/notification/:/var/log/notification
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    hostname: "email-rabbit"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - "./rabbit-data:/var/lib/rabbitmq/mnesia/"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.1.0
+    hostname: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:5.1.0
+    ports:
+      - 9092:9092
+      - 29092:29092
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.request.logger=WARN"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    hostname: kafka
+    restart: unless-stopped
