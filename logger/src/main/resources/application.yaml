@@ -1,6 +1,12 @@
 spring:
   application:
     name: logger
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: log-group
+
+kafka-topic: log-message
 
 server:
   port: ${APPLICATION_PORT:8020}

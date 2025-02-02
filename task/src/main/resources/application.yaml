@@ -12,6 +12,16 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: log-group
+    producer:
+      retries: 5
+      properties:
+        retry.backoff.ms: 1000
+
+kafka-topic: log-message
 
 server:
   port: ${APPLICATION_PORT:8060}

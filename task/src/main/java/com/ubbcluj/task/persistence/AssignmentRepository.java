@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AssignmentRepository extends JpaRepository<AssignmentEntity, Integer> {
-    List<AssignmentEntity> findByAssignedTo(Long id);
+public interface AssignmentRepository extends JpaRepository<AssignmentEntity, Long> {
+//    List<AssignmentEntity> findByAssignedTo(Long id);
 }
