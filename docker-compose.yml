@@ -106,6 +106,8 @@ services:
       - APPLICATION_PORT=8050
       - RABBIT_HOST=rabbitmq
       - RABBIT_PORT=5672
+      - FAKE_SMTP_SERVER=fake-smtp-server
+      - FAKE_SMTP_PORT=8025
     deploy:
       replicas: 1
     ports:
@@ -165,3 +167,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  fake-smtp-server:
+    image: gessnerfl/fake-smtp-server:latest
+    ports:
+      - "8025:8025"      #expose smtp port
+      - "5555:8080"      #expose web ui
+      - "8081:8081"      #expose management api

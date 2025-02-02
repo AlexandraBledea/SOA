@@ -14,6 +14,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   rabbitmq:
     host: ${RABBIT_HOST}
+  mail:
+    host: ${FAKE_SMTP_SERVER}
+    port: ${FAKE_SMTP_PORT}
+
+sender-email-address: alebledea@yahoo.com
 
 server:
   port: ${APPLICATION_PORT:8050}
