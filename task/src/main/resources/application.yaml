@@ -13,13 +13,20 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: ${KAFKA_SERVER}:${KAFKA_PORT}
     consumer:
       group-id: log-group
     producer:
       retries: 5
       properties:
         retry.backoff.ms: 1000
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jws-algorithms: RS512
+          issuer-uri: ${JWT_ISSUER_URI}
+          jwk-set-uri: ${JWK_SET_URI}
 
 kafka-topic: log-message
 

@@ -2,7 +2,7 @@ spring:
   application:
     name: logger
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: ${KAFKA_SERVER}:${KAFKA_PORT}
     consumer:
       group-id: log-group
 

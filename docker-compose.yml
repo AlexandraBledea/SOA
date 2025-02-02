@@ -64,6 +64,8 @@ services:
       context: ./logger
     environment:
       - APPLICATION_PORT=8020
+      - KAFKA_SERVER=kafka
+      - KAFKA_PORT=9092
     deploy:
       replicas: 1
     ports:
@@ -87,6 +89,10 @@ services:
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=postgres
       - APPLICATION_PORT=8060
+      - KAFKA_SERVER=kafka
+      - KAFKA_PORT=9092
+      - JWT_ISSUER_URI=http://localhost:8080
+      - JWK_SET_URI=http://host.docker.internal:8080/authentication/jwks
     deploy:
       replicas: 1
     ports:
