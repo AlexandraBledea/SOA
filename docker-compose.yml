@@ -38,24 +38,6 @@ services:
     volumes:
       - ./logs/authentication/:/var/log/authentication
 
-  email:
-    image: email:latest
-    restart: always
-    build:
-      dockerfile: Dockerfile
-      context: ./email
-    environment:
-      - APPLICATION_PORT=8070
-    deploy:
-      replicas: 1
-    ports:
-      - "8070:8070"
-    depends_on:
-      rabbitmq:
-        condition: service_started
-    volumes:
-      - ./logs/email/:/var/log/email
-
   logger:
     image: logger:latest
     restart: always
