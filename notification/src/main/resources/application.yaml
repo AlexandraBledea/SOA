@@ -12,11 +12,18 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  rabbitmq:
+    host: ${RABBIT_HOST}
 
 server:
   port: ${APPLICATION_PORT:8050}
   servlet:
     context-path: "/notification"
+
+rabbit:
+  exchange: notification_exchange
+  routing-key: email_notification_key
+  queue-name: email_notification_queue
 
 logging:
   file:

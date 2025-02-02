@@ -27,8 +27,15 @@ spring:
           jws-algorithms: RS512
           issuer-uri: ${JWT_ISSUER_URI}
           jwk-set-uri: ${JWK_SET_URI}
+  rabbitmq:
+    host: ${RABBIT_HOST}
+    port: ${RABBIT_PORT}
 
 kafka-topic: log-message
+rabbit:
+  exchange: notification_exchange
+  routing-key: email_notification_key
+  queue-name: email_notification_queue
 
 server:
   port: ${APPLICATION_PORT:8060}

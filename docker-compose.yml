@@ -75,6 +75,8 @@ services:
       - KAFKA_PORT=9092
       - JWT_ISSUER_URI=http://localhost:8080
       - JWK_SET_URI=http://host.docker.internal:8080/authentication/jwks
+      - RABBIT_HOST=rabbitmq
+      - RABBIT_PORT=5672
     deploy:
       replicas: 1
     ports:
@@ -85,7 +87,7 @@ services:
       kafka:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./logs/task/:/var/log/task
 
@@ -102,6 +104,8 @@ services:
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=postgres
       - APPLICATION_PORT=8050
+      - RABBIT_HOST=rabbitmq
+      - RABBIT_PORT=5672
     deploy:
       replicas: 1
     ports:
@@ -110,18 +114,22 @@ services:
       postgres-db:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./logs/notification/:/var/log/notification
 
   rabbitmq:
     image: "rabbitmq:3-management"
-    hostname: "email-rabbit"
     ports:
       - "5672:5672"
       - "15672:15672"
     volumes:
       - "./rabbit-data:/var/lib/rabbitmq/mnesia/"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   zookeeper:
     image: confluentinc/cp-zookeeper:5.1.0
