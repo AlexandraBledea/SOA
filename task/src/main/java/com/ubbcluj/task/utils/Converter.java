@@ -24,6 +24,6 @@ public class Converter {
 
     public TaskDto convertToTaskDto(TaskEntity taskEntity) {
         return new TaskDto(taskEntity.getId(), taskEntity.getTitle(), taskEntity.getDescription(), taskEntity.getStatus(),
-                taskEntity.getDueDate(), taskEntity.getCreatedBy().getUsername());
+                taskEntity.getDueDate(), taskEntity.getCreatedBy().getUsername(), taskEntity.getAssignedTo() != null ? taskEntity.getAssignedTo().getUsername() : "Unassigned");
     }
 }

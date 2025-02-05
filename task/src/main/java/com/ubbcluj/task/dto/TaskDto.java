@@ -5,6 +5,6 @@ import com.ubbcluj.task.persistence.entity.enums.TaskStatus;
 import java.time.LocalDate;
 
 public record TaskDto(Long id, String title, String description, TaskStatus status, LocalDate dueDate,
-                      String author) {
+                      String createdBy, String assignedTo) {
 
 }

@@ -1,10 +1,12 @@
 package com.ubbcluj.task.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ubbcluj.task.persistence.entity.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
@@ -13,10 +15,12 @@ import java.time.LocalDate;
 @Table(name = "task")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class TaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private Long id;
 
     @Column
@@ -31,7 +35,13 @@ public class TaskEntity {
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "created_by")
+    @JsonBackReference
     private UserEntity createdBy;
+
+    @OneToOne
+    @JoinColumn(name = "assigned_to")
+    @JsonBackReference
+    private UserEntity assignedTo;
 }
