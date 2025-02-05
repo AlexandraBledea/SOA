@@ -32,7 +32,7 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException());
 
         if (passwordEncoder.matches(password, user.getPassword())) {
-            return new JwtResponseDto(tokenService.generateToken(user.getUsername()));
+            return new JwtResponseDto(tokenService.generateToken(user.getUsername()), user.getUsername());
         }
 
         throw new AuthenticationException();
@@ -46,6 +46,6 @@ public class UserService {
         }
         UserEntity user = converter.convertToUserEntity(registerUserDto);
         userRepository.save(user);
-        return new JwtResponseDto(tokenService.generateToken(user.getUsername()));
+        return new JwtResponseDto(tokenService.generateToken(user.getUsername()), user.getUsername());
     }
 }
