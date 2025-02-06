@@ -26,7 +26,7 @@ public class SecurityConfig {
                     return configuration;
                 }))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/ws-endpoint*", "/ws-endpoint/**", "/topic*", "/topic**").permitAll()
+                        .requestMatchers("/sba-websocket*", "/sba-websocket/**", "/topic*", "/topic**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> httpSecurityOAuth2ResourceServerConfigurer.jwt(Customizer.withDefaults()));
         return http.build();

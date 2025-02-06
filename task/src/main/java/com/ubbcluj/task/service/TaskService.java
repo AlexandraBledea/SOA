@@ -25,17 +25,24 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final Converter converter;
     private final RabbitClient rabbitClient;
+    private final WebSocketService webSocketService;
 
-    public TaskService(UserRepository userRepository, TaskRepository taskRepository, Converter converter, RabbitClient rabbitClient) {
+    public TaskService(UserRepository userRepository, TaskRepository taskRepository, Converter converter, RabbitClient rabbitClient,
+                       WebSocketService webSocketService) {
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
         this.converter = converter;
         this.rabbitClient = rabbitClient;
+        this.webSocketService = webSocketService;
     }
 
     public List<TaskDto> getAllTasks() {
         List<TaskEntity> taskEntities = taskRepository.findAll();
         return taskEntities.stream().map(converter::convertToTaskDto).toList();
+    }
+
+    public List<TaskEntity> getAllTasksEntity() {
+        return taskRepository.findAll();
     }
 
     public TaskDto createTask(TaskDto task) throws EntityNotFoundException {
@@ -116,9 +123,14 @@ public class TaskService {
 
         TaskDto taskDto = converter.convertToTaskDto(taskEntity);
         sendEmail(userEntity, taskEntity);
+//        notifyFrontend("notification","New notification! ");
         log.info("Task assigned successfully {} to user {}", taskDto, userEntity);
         return taskDto;
     }
+
+//    private void notifyFrontend(String topic, String message) {
+//        webSocketService.sendMessage(topic, message);
+//    }
 
     public void sendEmail(UserEntity userEntity, TaskEntity taskEntity) {
         String emailDescription = String.format("User %s assigned task %s to you!", taskEntity.getCreatedBy().getUsername(), taskEntity.getTitle());
