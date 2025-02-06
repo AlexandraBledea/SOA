@@ -1,6 +1,7 @@
 package com.ubbcluj.task.service;
 
 import com.ubbcluj.task.client.RabbitClient;
+import com.ubbcluj.task.dto.AssignUserDto;
 import com.ubbcluj.task.dto.EmailNotificationDto;
 import com.ubbcluj.task.dto.TaskDto;
 import com.ubbcluj.task.exception.EntityNotFoundException;
@@ -14,9 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -36,10 +35,7 @@ public class TaskService {
 
     public List<TaskDto> getAllTasks() {
         List<TaskEntity> taskEntities = taskRepository.findAll();
-        log.info("{} tasks found", taskEntities.size());
-        List<TaskDto> taskDtos = taskEntities.stream().map(converter::convertToTaskDto).toList();
-        log.info("Tasks found are {}", taskDtos);
-        return taskDtos;
+        return taskEntities.stream().map(converter::convertToTaskDto).toList();
     }
 
     public TaskDto createTask(TaskDto task) throws EntityNotFoundException {
@@ -55,6 +51,30 @@ public class TaskService {
         TaskDto taskDto = converter.convertToTaskDto(taskEntity);
         log.info("Task created successfully {}", taskDto);
         return taskDto;
+    }
+
+    public TaskDto updateStatus(TaskDto task) throws EntityNotFoundException, RequestNotValidException {
+        if (task == null || task.id() == null) {
+            throw new RequestNotValidException();
+        }
+
+        TaskEntity taskEntity = taskRepository.findById(task.id())
+                .orElseThrow(EntityNotFoundException::new);
+
+        taskEntity.setStatus(task.status());
+        taskEntity = taskRepository.save(taskEntity);
+
+        TaskDto taskDto = converter.convertToTaskDto(taskEntity);
+        log.info("Task updated successfully {}", taskDto);
+        return taskDto;
+    }
+
+    public List<TaskDto> getAllTasksAssignedTo(AssignUserDto assignUserDto) throws EntityNotFoundException {
+        log.info("User to look for tasks assigned to {}", assignUserDto);
+        UserEntity userEntity = userRepository.findByUsername(assignUserDto.username())
+                .orElseThrow(EntityNotFoundException::new);
+        List<TaskEntity> taskEntities = taskRepository.findByAssignedTo(userEntity.getUsername());
+        return taskEntities.stream().map(converter::convertToTaskDto).toList();
     }
 
 
@@ -84,8 +104,9 @@ public class TaskService {
         return converter.convertToTaskDto(taskEntity);
     }
 
-    public TaskDto assignTask(Long taskId, Long userId) throws EntityNotFoundException {
-        UserEntity userEntity = userRepository.findById(userId)
+    public TaskDto assignTask(Long taskId, AssignUserDto userDto) throws EntityNotFoundException {
+        log.info("Task will be assigned to {}", userDto);
+        UserEntity userEntity = userRepository.findByUsername(userDto.username())
                 .orElseThrow(EntityNotFoundException::new);
         TaskEntity taskEntity = taskRepository.findById(taskId)
                 .orElseThrow(EntityNotFoundException::new);
@@ -94,12 +115,14 @@ public class TaskService {
         taskEntity = taskRepository.save(taskEntity);
 
         TaskDto taskDto = converter.convertToTaskDto(taskEntity);
+        sendEmail(userEntity, taskEntity);
         log.info("Task assigned successfully {} to user {}", taskDto, userEntity);
         return taskDto;
     }
 
-    public void testRabbitMq() {
-        EmailNotificationDto emailNotificationDto = new EmailNotificationDto("ale@yahoo.com", "test", "rabbit mq works", LocalDate.now());
+    public void sendEmail(UserEntity userEntity, TaskEntity taskEntity) {
+        String emailDescription = String.format("User %s assigned task %s to you!", taskEntity.getCreatedBy().getUsername(), taskEntity.getTitle());
+        EmailNotificationDto emailNotificationDto = new EmailNotificationDto(userEntity.getEmail(), "New task assigned!", emailDescription, LocalDate.now());
         rabbitClient.sendMessage(emailNotificationDto);
     }
 

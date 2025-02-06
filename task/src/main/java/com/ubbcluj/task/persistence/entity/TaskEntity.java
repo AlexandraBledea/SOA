@@ -35,12 +35,12 @@ public class TaskEntity {
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "created_by")
     @JsonBackReference
     private UserEntity createdBy;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "assigned_to")
     @JsonBackReference
     private UserEntity assignedTo;

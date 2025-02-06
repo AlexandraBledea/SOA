@@ -10,6 +10,10 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
 
-    @Query("SELECT td FROM TaskEntity td WHERE td.assignedTo.username =: username")
+    @Query("SELECT td FROM TaskEntity td WHERE td.assignedTo.username = :username")
     List<TaskEntity> findByCreatedBy(String username);
+
+    @Query("SELECT td FROM TaskEntity td WHERE td.assignedTo.username = :username")
+    List<TaskEntity> findByAssignedTo(String username);
+
 }
