@@ -29,10 +29,16 @@ Security is ensured through JWT-based authentication and authorization.
 4. **Notification Service**: Sends emails for task assignments and upcoming deadlines.
 
 ## **API Gateway**
-The API Gateway is built with **NGINX** and acts as a reverse proxy and load balancer, efficiently routing 
+The API Gateway is built with **NGINX** and acts as a reverse proxy, efficiently routing 
 requests to the appropriate backend services. It routes the traffic based on the following rules:
 - /task/** - routed towards Task Service app instances
 - /authentication/** - routed towards the Authentication Service
+
+## Load Balancing Mechanism
+### Built-in Docker Load Balancing:
+
+The task service is deployed with multiple replicas, and Docker's internal service discovery (DNS-based round-robin load balancing) automatically distributes requests among them.
+E.g. When Nginx makes a request to task:8060, Docker dynamically routes it to one of the available replicas.
 
 ## **Database Layer**
 A shared **PostgreSQL** database instance is used for the Authentication and Tasks microservices.
