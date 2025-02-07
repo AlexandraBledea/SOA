@@ -39,7 +39,7 @@ public class TaskController {
 
     @LogToKafka
     @PreAuthorize("isAuthenticated()")
-    @PostMapping(value="/get-deadline-reminder", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value="/get-deadline-reminder")
     public ResponseEntity<Object> getDeadlineReminder() {
         this.taskService.getDeadlineReminder();
         return ResponseEntity.ok().build();
