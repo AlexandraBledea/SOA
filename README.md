@@ -44,7 +44,7 @@ A shared **PostgreSQL** database instance is used for the Authentication and Tas
         - When a task is assigned, the Tasks Service sends a message to RabbitMQ.
         - RabbitMQ forwards the message to an SMTP server, which sends an email notification to the assigned user.
     - **Deadline Reminders**:
-        - A scheduled job sends requests daily to a Lambda function (`deadline_reminder`) to compute days until task due dates.
+        - There is a REST API which triggered requests to a Lambda function (`deadline_reminder`) to compute days until task due dates.
         - If the due date is ≤ 3 days away, a reminder email is triggered via RabbitMQ and SMTP.
 
 2. **Apache Kafka**:
@@ -124,6 +124,7 @@ it integrates with RabbitMQ to handle asynchronous email notifications for task 
 - **`GET /all`** – Retrieves a list of all tasks.
 - **`POST /save`** – Creates and saves a new task.
 - **`GET /{id}`** – Retrieves a task by its ID.
+- **`GET /get-deadline-reminder`** – Requests to a Lambda function (`deadline_reminder`) to compute days until task due dates. If the due date is ≤ 3 days away, a reminder email is triggered via RabbitMQ and SMTP.
 - **`PUT /update`** – Updates an existing task.
 - **`PUT /update-status`** – Updates the status of a task.
 - **`DELETE /delete/{id}`** – Deletes a task by its ID.
