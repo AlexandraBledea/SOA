@@ -144,39 +144,11 @@ The **Notification Microservice** is responsible for deadline reminders and task
 RabbitMq listener to communicate with the Task Microservice.
 
 This is the corresponding UML diagram generated with Intellij's diagrams plugin:
+![notification_uml](https://github.com/user-attachments/assets/c040e199-6eff-4424-854a-245c189a22e6)
 
-RegistrationEmailListener is set up as a RabbitMQ listener, listening to the EmailQueue queue.
+EmailNotificationListener is set up as a RabbitMQ listener, listening to the *email_notification_queue* queue.
 
-EmailSender communicates with the SMTP server set up for the application in order to send the emails.
-
-### **Key Features**
-- **Task Management** – Supports creating, updating, retrieving, and deleting tasks.
-- **Task Assignment** – Allows assigning tasks to users and retrieving tasks assigned to a specific user.
-- **Status Updates** – Enables updating the status of tasks to track progress.
-- **Logging with Kafka** – Captures and logs all task-related actions for monitoring and debugging.
-- **Email Notifications via RabbitMQ** – Sends asynchronous email alerts for task assignments and upcoming deadlines.
-
-#### **REST API Endpoints**
-- **`GET /all`** – Retrieves a list of all tasks.
-- **`POST /save`** – Creates and saves a new task.
-- **`GET /{id}`** – Retrieves a task by its ID.
-- **`PUT /update`** – Updates an existing task.
-- **`PUT /update-status`** – Updates the status of a task.
-- **`DELETE /delete/{id}`** – Deletes a task by its ID.
-- **`POST /all-assigned-to`** – Retrieves all tasks assigned to a specific user.
-- **`POST /assign/{taskId}`** – Assigns a task to a user.
-
-### Other aspects:
-The whole microservice is protected using Spring Security, set up to communicate with the Authentication Service to
-validate JWTs passed as Bearer tokens through the request headers, in order to identify the caller.
-
-The LoggingAspect is a class that uses aspect-oriented programming to generate logs whenever any of the exposed APIs are called.
-These logs are then sent to the loggingService using Kafka to centralize them.
-
-As previously, persistence is achieved through the Repository classes that communicate with the database.
-
-This is the corresponding UML diagram generated with Intellij's diagrams plugin:
-![task_uml](https://github.com/user-attachments/assets/2b28a234-491e-4eb9-ab64-23890db4806e)
+EmailNotificationService communicates with the SMTP server set up for the application in order to send the emails.
 
 ## **Technologies Used**
 - **Backend**: Java Spring Boot
