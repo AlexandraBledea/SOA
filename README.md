@@ -7,7 +7,7 @@ user management, and task management functionalities. It leverages Docker for co
 orchestration.
 
 The system employs a robust backend built with Java Spring Boot, a microfrontend architecture using Angular and Module 
-Federation, and an NGINX load-balanced API Gateway for efficient request routing. Additionally, it integrates serverless 
+Federation (https://github.com/AlexandraBledea/SOA-FE) , and an NGINX load-balanced API Gateway for efficient request routing. Additionally, it integrates serverless 
 functions using AWS Lambda, RabbitMQ for asynchronous communication, and Apache Kafka for real-time event streaming. 
 Security is ensured through JWT-based authentication and authorization.
 
