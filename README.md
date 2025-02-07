@@ -79,7 +79,8 @@ Principles:
 
 ### **1. Authentication Microservice**
 
-The **Authentication Microservice** is responsible for user authentication and registration. It provides REST API endpoints for user management and issues secure **JWT tokens** for authentication.
+The **Authentication Microservice** is responsible for user authentication and registration. 
+It provides REST API endpoints for user management and issues secure **JWT tokens** for authentication.
 
 ### **Key Features**
 - User registration and account creation.
@@ -91,11 +92,18 @@ The **Authentication Microservice** is responsible for user authentication and r
 - **`POST /login`** – Authenticates a user and returns a JWT token.
 - **`GET /jwks`** – Provides the **JSON Web Key Set (JWKS)**, containing the public key used to verify JWT signatures, ensuring secure authentication and authorization.
 
+### Other aspects:
+
+The UserRepository manages the persistence of user entities by populating the users and user_authentication_details tables.
+
+Authentication is handled through an OAuth Authorization Server, which generates JWT tokens using asymmetric signing with 
+an RSA key pair stored in separate files. Resource servers can verify these JWT tokens by retrieving the public key via the /jwks API.
+
 This is the corresponding UML diagram generated with Intellij's diagrams plugin:
 ![authentication_uml](https://github.com/user-attachments/assets/7c5f5c26-5966-408a-8217-f66e42f7609a)
 
 
-### **1. Task Microservice**
+### **2. Task Microservice**
 
 The **Task Microservice** handles task management, including creation, updating, assignment, and deletion of tasks. 
 It provides REST API endpoints for retrieving all tasks, managing task statuses, and assigning tasks to users. 
@@ -119,9 +127,58 @@ it integrates with RabbitMQ to handle asynchronous email notifications for task 
 - **`POST /all-assigned-to`** – Retrieves all tasks assigned to a specific user.
 - **`POST /assign/{taskId}`** – Assigns a task to a user.
 
+### Other aspects:
+The whole microservice is protected using Spring Security, set up to communicate with the Authentication Service to 
+validate JWTs passed as Bearer tokens through the request headers, in order to identify the caller.
+
+The LoggingAspect is a class that uses aspect-oriented programming to generate logs whenever any of the exposed APIs are called. 
+These logs are then sent to the loggingService using Kafka to centralize them.
+
+As previously, persistence is achieved through the Repository classes that communicate with the database.
+
 This is the corresponding UML diagram generated with Intellij's diagrams plugin:
 ![task_uml](https://github.com/user-attachments/assets/2b28a234-491e-4eb9-ab64-23890db4806e)
 
+
+### **3. Notification Microservice**
+
+The **Notification Microservice** is responsible for deadline reminders and tasks assignment emails. It is set up as a
+RabbitMq listener to communicate with the Task Microservice.
+
+This is the corresponding UML diagram generated with Intellij's diagrams plugin:
+
+RegistrationEmailListener is set up as a RabbitMQ listener, listening to the EmailQueue queue.
+
+EmailSender communicates with the SMTP server set up for the application in order to send the emails.
+
+### **Key Features**
+- **Task Management** – Supports creating, updating, retrieving, and deleting tasks.
+- **Task Assignment** – Allows assigning tasks to users and retrieving tasks assigned to a specific user.
+- **Status Updates** – Enables updating the status of tasks to track progress.
+- **Logging with Kafka** – Captures and logs all task-related actions for monitoring and debugging.
+- **Email Notifications via RabbitMQ** – Sends asynchronous email alerts for task assignments and upcoming deadlines.
+
+#### **REST API Endpoints**
+- **`GET /all`** – Retrieves a list of all tasks.
+- **`POST /save`** – Creates and saves a new task.
+- **`GET /{id}`** – Retrieves a task by its ID.
+- **`PUT /update`** – Updates an existing task.
+- **`PUT /update-status`** – Updates the status of a task.
+- **`DELETE /delete/{id}`** – Deletes a task by its ID.
+- **`POST /all-assigned-to`** – Retrieves all tasks assigned to a specific user.
+- **`POST /assign/{taskId}`** – Assigns a task to a user.
+
+### Other aspects:
+The whole microservice is protected using Spring Security, set up to communicate with the Authentication Service to
+validate JWTs passed as Bearer tokens through the request headers, in order to identify the caller.
+
+The LoggingAspect is a class that uses aspect-oriented programming to generate logs whenever any of the exposed APIs are called.
+These logs are then sent to the loggingService using Kafka to centralize them.
+
+As previously, persistence is achieved through the Repository classes that communicate with the database.
+
+This is the corresponding UML diagram generated with Intellij's diagrams plugin:
+![task_uml](https://github.com/user-attachments/assets/2b28a234-491e-4eb9-ab64-23890db4806e)
 
 ## **Technologies Used**
 - **Backend**: Java Spring Boot
