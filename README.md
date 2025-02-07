@@ -1,8 +1,6 @@
 # **Tasks Manager Application**
 A Microservice-Based System for Service-Oriented Architecture
 
----
-
 ## **Overview**
 The Tasks Manager Application is a fully containerized, microservice-based system designed to manage authentication, 
 user management, and task management functionalities. It leverages Docker for containerization and Docker Compose for 
