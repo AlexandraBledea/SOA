@@ -93,6 +93,7 @@ The **Authentication Microservice** is responsible for user authentication and r
 - **`GET /jwks`** – Provides the **JSON Web Key Set (JWKS)**, containing the public key used to verify JWT signatures, ensuring secure authentication and authorization.
 
 This is the corresponding UML diagram generated with Intellij's diagrams plugin:
+![authentication_uml](https://github.com/user-attachments/assets/7c5f5c26-5966-408a-8217-f66e42f7609a)
 
 
 ## **Technologies Used**
