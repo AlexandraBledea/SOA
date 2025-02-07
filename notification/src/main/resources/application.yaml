@@ -18,7 +18,7 @@ spring:
     host: ${FAKE_SMTP_SERVER}
     port: ${FAKE_SMTP_PORT}
 
-sender-email-address: alebledea@yahoo.com
+sender-email-address: soa@yahoo.com
 
 server:
   port: ${APPLICATION_PORT:8050}
