@@ -120,6 +120,8 @@ it integrates with RabbitMQ to handle asynchronous email notifications for task 
 - **`POST /assign/{taskId}`** – Assigns a task to a user.
 
 This is the corresponding UML diagram generated with Intellij's diagrams plugin:
+![task_uml](https://github.com/user-attachments/assets/2b28a234-491e-4eb9-ab64-23890db4806e)
+
 
 ## **Technologies Used**
 - **Backend**: Java Spring Boot
