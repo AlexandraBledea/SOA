@@ -30,7 +30,9 @@ Security is ensured through JWT-based authentication and authorization.
 
 ## **API Gateway**
 The API Gateway is built with **NGINX** and acts as a reverse proxy and load balancer, efficiently routing 
-requests to the appropriate backend services.
+requests to the appropriate backend services. It routes the traffic based on the following rules:
+- /task/** - routed towards Task Service app instances
+- /authentication/** - routed towards the Authentication Service
 
 ## **Database Layer**
 A shared **PostgreSQL** database instance is used for the Authentication and Tasks microservices.
@@ -59,7 +61,10 @@ The function is deployed and managed using the Serverless Framework for efficien
 
 ## **System architecture**
 
-The front-end of the tasks manager application is built as a microfrontend architecture using Module Federation with Webpack. It consists of a host (shell) and two microfrontends (authentication and tasks) to provide a modular and scalable interface.
+The front-end of the tasks manager application is built as a microfrontend architecture using Module Federation with Webpack. 
+It consists of a host (shell) and two microfrontends (authentication and tasks) to provide a modular and scalable interface.
+The authentication microfrontend handles the authentication and registration components.
+The tasks microfrontend provides components related to task management.
 
 All of the above are illustrated in the following architecture diagram:
 ![Untitled Diagram drawio(1)](https://github.com/user-attachments/assets/3b15f5b8-a7fa-44e9-b0e0-b46cefd6b1b7)
@@ -71,7 +76,7 @@ Principles:
 - The Java REST APIs run multiple instances, with load balancing managed by the NGINX Gateway, which handles external access to the services.
 - Task assignment and upcoming deadline emails are handled asynchronously through RabbitMQ messaging.
 - Due to having multiple instances started, for traceability, logs are gathered in the loggingService.
-- The REST micro-services are protected through OAuth using JWTs generated and managed by the authenticationService.
+- The REST microservices are protected through OAuth using JWTs generated and managed by the authenticationService.
 
 ## **A detailed view of the microservices**
 
@@ -150,7 +155,15 @@ EmailNotificationListener is set up as a RabbitMQ listener, listening to the *em
 
 EmailNotificationService communicates with the SMTP server set up for the application in order to send the emails.
 
-## **Technologies Used**
+### **4. Logger Microservice**
+
+The **Logger Microservice** is responsible for centralizing logs. It is set up as a
+RabbitMq listener to communicate with the Task Microservice.
+
+Contains a single relevant class, LoggingListener, which is set up as a Kafka Consumer for the log-message topic and 
+centralizes the logs from multiple app instances in one place.
+
+### **Technologies Used**
 - **Backend**: Java Spring Boot
 - **Frontend**: Angular with Module Federation
 - **Containerization**: Docker, Docker Compose
@@ -160,3 +173,78 @@ EmailNotificationService communicates with the SMTP server set up for the applic
 - **Event Streaming**: Apache Kafka
 - **Serverless Framework**: AWS Lambda
 - **Security**: JWT Authentication
+
+## **Deployment & Setup**
+## Running the Backend Applications
+
+### Prerequisites
+- Ensure you have **Docker** and **Maven** installed on your system.
+- Clone the repository:
+  ```
+  git clone https://github.com/AlexandraBledea/SOA
+  cd SOA
+  ```
+
+### Steps to Run the Backend:
+1. Navigate into each microservice directory (**task**, **auth**, **notification**, **logger**) and run:
+   ```
+   mvn clean package
+   ```
+2. Return to the main directory (**SOA**) and build the Docker images:
+   ```
+   docker compose -f docker-compose.yaml build
+   ```
+3. Start the services:
+   ```
+   docker compose -f docker-compose.yaml up -d
+   ```
+4. The **API Gateway** will be available at:
+   ```
+   http://localhost:4000
+   ```
+
+---
+
+## Running the Frontend Applications
+
+### Prerequisites
+- Ensure you have **Docker** installed.
+- Clone the repository:
+  ```
+  git clone https://github.com/AlexandraBledea/SOA-FE
+  cd SOA-FE
+  ```
+
+### Steps to Run the Frontend:
+1. Build the microfrontends and dependencies using Docker Compose:
+   ```
+   docker compose -f docker-compose.yaml build
+   ```
+2. Start the frontend services:
+   ```
+   docker compose -f docker-compose.yaml up -d
+   ```
+3. Access the frontend application at:
+   ```
+   https://localhost:4200
+   ```
+
+---
+
+## Notes
+- Ensure all required dependencies are installed before running the application.
+- If any container fails, check logs using:
+  ```
+  docker logs <container_name>
+  ```
+- To stop the services, run:
+  ```
+  docker compose -f docker-compose.yaml down
+  ```
+
+---
+
+## License
+This project is licensed under the **MIT License**. Feel free to modify and distribute it.
+
+
