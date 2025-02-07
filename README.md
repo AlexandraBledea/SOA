@@ -86,7 +86,6 @@ The **Authentication Microservice** is responsible for user authentication and r
 - Secure login with password hashing and validation.
 - JWT token generation for authenticated access.
 
-### **Main Components**
 #### **REST API Endpoints**
 - **`POST /register`** – Registers a new user in the system.
 - **`POST /login`** – Authenticates a user and returns a JWT token.
@@ -95,6 +94,32 @@ The **Authentication Microservice** is responsible for user authentication and r
 This is the corresponding UML diagram generated with Intellij's diagrams plugin:
 ![authentication_uml](https://github.com/user-attachments/assets/7c5f5c26-5966-408a-8217-f66e42f7609a)
 
+
+### **1. Task Microservice**
+
+The **Task Microservice** handles task management, including creation, updating, assignment, and deletion of tasks. 
+It provides REST API endpoints for retrieving all tasks, managing task statuses, and assigning tasks to users. 
+The service ensures secure access with authentication and logs operations using Kafka. Additionally, 
+it integrates with RabbitMQ to handle asynchronous email notifications for task assignments and upcoming deadlines.
+
+### **Key Features**
+- **Task Management** – Supports creating, updating, retrieving, and deleting tasks.
+- **Task Assignment** – Allows assigning tasks to users and retrieving tasks assigned to a specific user.
+- **Status Updates** – Enables updating the status of tasks to track progress.
+- **Logging with Kafka** – Captures and logs all task-related actions for monitoring and debugging.
+- **Email Notifications via RabbitMQ** – Sends asynchronous email alerts for task assignments and upcoming deadlines.
+
+#### **REST API Endpoints**
+- **`GET /all`** – Retrieves a list of all tasks.
+- **`POST /save`** – Creates and saves a new task.
+- **`GET /{id}`** – Retrieves a task by its ID.
+- **`PUT /update`** – Updates an existing task.
+- **`PUT /update-status`** – Updates the status of a task.
+- **`DELETE /delete/{id}`** – Deletes a task by its ID.
+- **`POST /all-assigned-to`** – Retrieves all tasks assigned to a specific user.
+- **`POST /assign/{taskId}`** – Assigns a task to a user.
+
+This is the corresponding UML diagram generated with Intellij's diagrams plugin:
 
 ## **Technologies Used**
 - **Backend**: Java Spring Boot
