@@ -76,6 +76,7 @@ services:
       - JWK_SET_URI=http://host.docker.internal:4000/authentication/jwks
       - RABBIT_HOST=rabbitmq
       - RABBIT_PORT=5672
+      - LAMBDA_URL=https://rb2jqfl453xnhag3cw2bdseyxq0dmygm.lambda-url.eu-central-1.on.aws/
     ports:
       - "8060"
     deploy:
