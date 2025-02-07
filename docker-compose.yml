@@ -50,7 +50,7 @@ services:
       - KAFKA_PORT=9092
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
     depends_on:
       kafka:
         condition: service_healthy
@@ -111,7 +111,7 @@ services:
       - FAKE_SMTP_PORT=8025
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
     depends_on:
       postgres-db:
         condition: service_healthy
