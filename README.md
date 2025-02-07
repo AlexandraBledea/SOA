@@ -75,7 +75,25 @@ Principles:
 - Due to having multiple instances started, for traceability, logs are gathered in the loggingService.
 - The REST micro-services are protected through OAuth using JWTs generated and managed by the authenticationService.
 
----
+## **A detailed view of the microservices**
+
+### **1. Authentication Microservice**
+
+The **Authentication Microservice** is responsible for user authentication and registration. It provides REST API endpoints for user management and issues secure **JWT tokens** for authentication.
+
+### **Key Features**
+- User registration and account creation.
+- Secure login with password hashing and validation.
+- JWT token generation for authenticated access.
+
+### **Main Components**
+#### **REST API Endpoints**
+- **`POST /register`** – Registers a new user in the system.
+- **`POST /login`** – Authenticates a user and returns a JWT token.
+- **`GET /jwks`** – Provides the **JSON Web Key Set (JWKS)**, containing the public key used to verify JWT signatures, ensuring secure authentication and authorization.
+
+This is the corresponding UML diagram generated with Intellij's diagrams plugin:
+
 
 ## **Technologies Used**
 - **Backend**: Java Spring Boot
