@@ -32,7 +32,7 @@ public class DeadlineReminderJob {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Scheduled(cron = "0 * * * * ?") // Runs at the start of every minute
+//    @Scheduled(cron = "0 * * * * ?") // Runs at the start of every minute
     public void reminder() throws JsonProcessingException {
         log.info("Reminder Job started");
         List<TaskEntity> tasks = this.taskService.getAllTasksEntity();

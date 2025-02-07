@@ -1,9 +1,9 @@
 package com.ubbcluj.task.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubbcluj.task.client.RabbitClient;
-import com.ubbcluj.task.dto.AssignUserDto;
-import com.ubbcluj.task.dto.EmailNotificationDto;
-import com.ubbcluj.task.dto.TaskDto;
+import com.ubbcluj.task.dto.*;
 import com.ubbcluj.task.exception.EntityNotFoundException;
 import com.ubbcluj.task.exception.RequestNotValidException;
 import com.ubbcluj.task.persistence.TaskRepository;
@@ -12,7 +12,11 @@ import com.ubbcluj.task.persistence.entity.TaskEntity;
 import com.ubbcluj.task.persistence.entity.UserEntity;
 import com.ubbcluj.task.utils.Converter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +30,10 @@ public class TaskService {
     private final Converter converter;
     private final RabbitClient rabbitClient;
     private final WebSocketService webSocketService;
+    @Value("${lambdaURL}")
+    private String lambdaUrl;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public TaskService(UserRepository userRepository, TaskRepository taskRepository, Converter converter, RabbitClient rabbitClient,
                        WebSocketService webSocketService) {
@@ -39,6 +47,29 @@ public class TaskService {
     public List<TaskDto> getAllTasks() {
         List<TaskEntity> taskEntities = taskRepository.findAll();
         return taskEntities.stream().map(converter::convertToTaskDto).toList();
+    }
+
+    public void getDeadlineReminder() {
+        List<TaskEntity> tasks = getAllTasksEntity();
+        for (TaskEntity task : tasks) {
+            DeadlineReminderDto deadlineReminderDto = new DeadlineReminderDto(task.getDueDate().toString(), task.getTitle());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Object> entityLambda =
+                    new HttpEntity<>(deadlineReminderDto, headers);
+
+            ResponseEntity<DeadlineReminderResponseDto> responseLambda =
+                    restTemplate.exchange(lambdaUrl, HttpMethod.POST, entityLambda, DeadlineReminderResponseDto.class);
+
+            DeadlineReminderResponseDto deadlineReminderResponseDto = responseLambda.getBody();
+            if (!deadlineReminderResponseDto.reminder().isEmpty()) {
+                if (task.getAssignedTo() != null) {
+                    sendEmail(task.getAssignedTo(), deadlineReminderResponseDto.reminder());
+                } else {
+                    sendEmail(task.getCreatedBy(), deadlineReminderResponseDto.reminder());
+                }
+            }
+        }
     }
 
     public List<TaskEntity> getAllTasksEntity() {
@@ -135,6 +166,11 @@ public class TaskService {
     public void sendEmail(UserEntity userEntity, TaskEntity taskEntity) {
         String emailDescription = String.format("User %s assigned task %s to you!", taskEntity.getCreatedBy().getUsername(), taskEntity.getTitle());
         EmailNotificationDto emailNotificationDto = new EmailNotificationDto(userEntity.getEmail(), "New task assigned!", emailDescription, LocalDate.now());
+        rabbitClient.sendMessage(emailNotificationDto);
+    }
+
+    public void sendEmail(UserEntity userEntity, String emailDescription) {
+        EmailNotificationDto emailNotificationDto = new EmailNotificationDto(userEntity.getEmail(), "Deadline approaching fast!", emailDescription, LocalDate.now());
         rabbitClient.sendMessage(emailNotificationDto);
     }
 

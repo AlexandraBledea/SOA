@@ -39,6 +39,14 @@ public class TaskController {
 
     @LogToKafka
     @PreAuthorize("isAuthenticated()")
+    @PostMapping(value="/get-deadline-reminder", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getDeadlineReminder() {
+        this.taskService.getDeadlineReminder();
+        return ResponseEntity.ok().build();
+    }
+
+    @LogToKafka
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value="/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<TaskDto> getTaskById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return ResponseEntity.ok(this.taskService.getTaskById(id));
