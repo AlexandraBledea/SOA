@@ -163,17 +163,6 @@ RabbitMq listener to communicate with the Task Microservice.
 Contains a single relevant class, LoggingListener, which is set up as a Kafka Consumer for the log-message topic and 
 centralizes the logs from multiple app instances in one place.
 
-### **Technologies Used**
-- **Backend**: Java Spring Boot
-- **Frontend**: Angular with Module Federation
-- **Containerization**: Docker, Docker Compose
-- **Load Balancer**: NGINX
-- **Database**: PostgreSQL
-- **Message Broker**: RabbitMQ
-- **Event Streaming**: Apache Kafka
-- **Serverless Framework**: AWS Lambda
-- **Security**: JWT Authentication
-
 ## **Deployment & Setup**
 ## Running the Backend Applications
 
@@ -203,8 +192,6 @@ centralizes the logs from multiple app instances in one place.
    http://localhost:4000
    ```
 
----
-
 ## Running the Frontend Applications
 
 ### Prerequisites
@@ -229,7 +216,17 @@ centralizes the logs from multiple app instances in one place.
    https://localhost:4200
    ```
 
----
+## **Technologies Used**
+- **Backend**: Java Spring Boot
+- **Frontend**: Angular with Module Federation
+- **Containerization**: Docker, Docker Compose
+- **Load Balancer**: NGINX
+- **Database**: PostgreSQL
+- **Message Broker**: RabbitMQ
+- **Event Streaming**: Apache Kafka
+- **Serverless Framework**: AWS Lambda
+- **Security**: JWT Authentication
+
 
 ## Notes
 - Ensure all required dependencies are installed before running the application.
@@ -241,8 +238,6 @@ centralizes the logs from multiple app instances in one place.
   ```
   docker compose -f docker-compose.yaml down
   ```
-
----
 
 ## License
 This project is licensed under the **MIT License**. Feel free to modify and distribute it.
